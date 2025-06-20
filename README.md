@@ -1,5 +1,3 @@
-# 💻 Proyecto React Native - Control de Ramas
-
 ## 👥 Equipo
 - **Luis** (Responsable de integración)
 - **Kenny** (Colaborador)
