@@ -7,8 +7,6 @@
 
 ## 🔧 ¿Cómo trabajar?
 
-### Para Kenny y Jean:
-
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/luispineda1702/MammaMiaApp.git
