@@ -2,6 +2,7 @@ import { Button, SafeAreaView, StyleSheet, Text, TextInput, View, Image, Touchab
 import React, { useState } from 'react'
 import axios from 'axios';
 import { Alert } from 'react-native';
+import { CommonActions } from '@react-navigation/native';
 
 const logo=require('../../assets/logo.png')
 
@@ -23,7 +24,12 @@ export default function LoginScreen({ navigation }: any) {
     // Muestra mensaje y guarda token si es necesario
     Alert.alert('Bienvenido', `Hola ${data.usuario.nombre}`);
     // Puedes guardar el token en AsyncStorage aquí si quieres
-    navigation.navigate('Menu')
+    //navigation.navigate('Menu')
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Menu',params:{usuario:data.usuario}, },],})
+    );
   } catch (error:any) {
     if (error.response?.data?.error) {
       Alert.alert('Error de login', error.response.data.error);
