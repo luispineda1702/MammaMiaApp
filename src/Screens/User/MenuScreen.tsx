@@ -42,6 +42,9 @@ export default function MenuScreen({ navigation ,route}: any) {
       <View style={styles.header}>
           <Text style={styles.greeting}>Hola {nombre} {apellido}</Text>
         <View style={styles.iconGroup}>
+        <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
+          <FontAwesome name="user-circle" size={24} color="black" style={styles.icon} />
+        </TouchableOpacity>  
         <TouchableOpacity onPress={() => navigation.navigate('Carrito')}>
           <FontAwesome name="shopping-cart" size={24} color="black" style={styles.icon} />
         </TouchableOpacity>
@@ -73,8 +76,12 @@ export default function MenuScreen({ navigation ,route}: any) {
         )}
       />
 
-      <Button title="Ver Promociones" onPress={() => navigation.navigate('Promotions')} />
-      <Button title="Personalizar Pizza" onPress={() => navigation.navigate('CustomizePizza')} />
+      <View style={{marginVertical:8,paddingHorizontal:40}}>
+        <Button title="Ver Promociones" onPress={() => navigation.navigate('Promotions')} />
+      </View>  
+      <View style={{marginVertical:8,paddingHorizontal:40}}>  
+        <Button title="Personalizar Pizza" onPress={() => navigation.navigate('CustomizePizza')} />
+      </View>
     </SafeAreaView>
   );
 }

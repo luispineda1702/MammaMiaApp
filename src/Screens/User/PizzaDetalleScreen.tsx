@@ -1,30 +1,49 @@
-import { Button, SafeAreaView, StyleSheet, Text, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import { SafeAreaView, StyleSheet, Text, TextInput, Button, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { FontAwesome } from '@expo/vector-icons';
+import { useCarro } from '../../Components/CarroContext';// Asegúrate de que la ruta esté correcta
 
-export default function PizzaDetalleScreen({ route }: any) {
-    const { pizza } = route.params;
-    const [cantidad, setCantidad] = useState(1);
-    const precioFinal = pizza.precioBase * cantidad;
-  
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>{pizza.nombre}</Text>
-        <Text>Tipo: {pizza.tipo}</Text>
-        <Text>Precio unitario: S/ {pizza.precioBase}</Text>
-  
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          placeholder="Cantidad"
-          value={cantidad.toString()}
-          onChangeText={(value) => setCantidad(parseInt(value) || 1)}
-        />
-        <Text style={styles.title}>Total: S/ {precioFinal.toFixed(2)}</Text>
-        <Button title="Agregar al pedido" onPress={() => alert('Agregado')} />
-      </SafeAreaView>
-    );
-  }
+export default function PizzaDetalleScreen({ route, navigation }: any) {
+  const { pizza } = route.params;
+  const [cantidad, setCantidad] = useState(1);
+  const precioFinal = pizza.precioBase * cantidad;
 
+  const { agregarAlCarro } = useCarro(); // Usamos el contexto
+
+  const agregar = () => {
+    const pizzaConCantidad = {
+      ...pizza,
+      cantidad,
+      total: precioFinal,
+    };
+
+    agregarAlCarro(pizzaConCantidad);
+    navigation.navigate('Carrito'); // Va a CarroScreen
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <FontAwesome name="arrow-left" size={24} color="black" />
+      </TouchableOpacity>
+
+      <Text style={styles.title}>{pizza.nombre}</Text>
+      <Text>Tipo: {pizza.tipo}</Text>
+      <Text>Precio unitario: S/ {pizza.precioBase}</Text>
+
+      <TextInput
+        style={styles.input}
+        keyboardType="numeric"
+        placeholder="Cantidad"
+        value={cantidad.toString()}
+        onChangeText={(value) => setCantidad(parseInt(value) || 1)}
+      />
+
+      <Text style={styles.title}>Total: S/ {precioFinal.toFixed(2)}</Text>
+      <Button title="Agregar al pedido" onPress={agregar} />
+    </SafeAreaView>
+  );
+}
 
   const styles = StyleSheet.create({
     container: {
@@ -58,4 +77,8 @@ export default function PizzaDetalleScreen({ route }: any) {
       fontSize: 18,
       fontWeight: '600',
     },
+    backButton: {
+    alignSelf: 'flex-start',
+    marginBottom: 10,
+    }
   });
