@@ -1,4 +1,4 @@
-import { Button, SafeAreaView, StyleSheet, Text, TextInput ,Image} from 'react-native'
+import { Button, SafeAreaView, StyleSheet, Text, TextInput ,Image, View} from 'react-native'
 import React, { useState } from 'react'
 import axios from 'axios';
 
@@ -71,7 +71,12 @@ export default function RegisterScreen({ navigation }: any) {
           value={password}
           onChangeText={setPassword}
         />
-        <Button title="Registrarse" onPress={() =>registrarUsuario()} />
+        <View style={{marginVertical:8,paddingHorizontal:80}}>
+          <Button title="Registrarse" onPress={() =>registrarUsuario()} />
+        </View>
+        <View style={{marginVertical:8,paddingHorizontal:80}}>
+          <Button title="Cancelar" onPress={() => navigation.navigate('Login')} />
+        </View>
       </SafeAreaView>
     );
   }

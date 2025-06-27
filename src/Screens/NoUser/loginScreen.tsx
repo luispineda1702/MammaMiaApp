@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }: any) {
     } else {
       Alert.alert('Error de red', 'No se pudo conectar con el servidor');
     }
-    console.error('❌ Error en login:', error);
+    //console.error('❌ Error en login:', error);
   }
 };
 
@@ -46,8 +46,12 @@ export default function LoginScreen({ navigation }: any) {
         value={password}
         onChangeText={setPassword}
       />
-      <Button title="Ingresar" onPress={()=>loginUsuario()} />
-      <Button title="¿No tienes cuenta? Regístrate" onPress={() => navigation.navigate('Register')} />
+      <View style={{marginVertical:8,paddingHorizontal:80}}>
+        <Button title="Ingresar" onPress={()=>loginUsuario()} />
+      </View>
+      <View style={{marginVertical:8,paddingHorizontal:80}}>
+        <Button title="¿No tienes cuenta? Regístrate" onPress={() => navigation.navigate('Register')} />
+      </View>
     </SafeAreaView>
   );
 }
