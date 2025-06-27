@@ -19,8 +19,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Menu" component={MenuScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}}/>
+        <Stack.Screen name="Menu" component={MenuScreen} options={{headerShown: false}} />
         <Stack.Screen name="PizzaDetalle" component={PizzaDetalleScreen} />
         <Stack.Screen name="Promotions" component={PromotionsScreen} />
         <Stack.Screen name="CustomizePizza" component={CustomizePizzaScreen} />

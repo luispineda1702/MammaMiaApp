@@ -45,37 +45,40 @@ export default function MenuScreen({ navigation }: any) {
     );
   }
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 20,
-      backgroundColor: '#FFFCEB',
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#D35400',
-      marginBottom: 15,
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: '#CCC',
-      backgroundColor: '#FFF',
-      padding: 10,
-      borderRadius: 8,
-      marginBottom: 10,
-    },
-    itemBox: {
-      padding: 10,
-      backgroundColor: '#FFF9E5',
-      borderRadius: 8,
-      marginBottom: 8,
-      borderWidth: 1,
-      borderColor: '#ddd',
-    },
-    item: {
-      fontSize: 18,
-      fontWeight: '600',
-    },
-  });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#FFFCEB',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#D35400',
+    marginBottom: 15,
+    marginTop:10,
+    textAlign:'center'
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#CCC',
+    backgroundColor: '#FFF',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+    marginHorizontal:30
+  },
+  itemBox: {
+    padding: 10,
+    backgroundColor: '#FFF9E5',
+    borderRadius: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  item: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+});
   
