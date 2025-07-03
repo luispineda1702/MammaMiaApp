@@ -8,7 +8,7 @@ export interface Producto {
   masa?: string;
   cantidad: number;
   ingredientes?: string[];
-  total: number; // ya tienes este campo que sería precio total por ese producto
+  total: number; 
 }
 
 interface CarroContextProps {
@@ -16,7 +16,7 @@ interface CarroContextProps {
   agregarAlCarro: (producto: Omit<Producto, 'id'>) => void;
   eliminarDelCarro: (id: number) => void;
   limpiarCarro: () => void;
-  total: number; // nuevo campo total agregado
+  total: number; 
 }
 
 const CarroContext = createContext<CarroContextProps | undefined>(undefined);
@@ -37,7 +37,7 @@ export const CarroProvider = ({ children }: { children: React.ReactNode }) => {
     setCarro([]);
   };
 
-  // Calcular total sumando el total de cada producto
+  
   const total = useMemo(() => {
     return carro.reduce((acc, producto) => acc + producto.total, 0);
   }, [carro]);

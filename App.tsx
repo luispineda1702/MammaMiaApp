@@ -14,7 +14,7 @@ import CarroScreen from './src/Screens/User/CarroScreen';
 import PerfilScreen from './src/Screens/User/PerfilScreen';
 
 import { CarroProvider } from './src/Components/CarroContext';
-import { HistorialProvider } from './src/Components/HistorialContext'; // asegúrate que la ruta sea correcta
+import { HistorialProvider } from './src/Components/HistorialContext'; 
 import MetodoPagoScreen from './src/Screens/User/MetPago';
 import HistorialScreen from './src/Screens/User/HistorialScreen';
 

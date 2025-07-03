@@ -21,9 +21,9 @@ export default function LoginScreen({ navigation }: any) {
     const data = res.data;
     console.log('✅ Login exitoso:', data);
 
-    // Muestra mensaje y guarda token si es necesario
+    
     Alert.alert('Bienvenido', `Hola ${data.usuario.nombre}`);
-    // Puedes guardar el token en AsyncStorage aquí si quieres
+    
     //navigation.navigate('Menu')
     navigation.dispatch(
       CommonActions.reset({
@@ -36,7 +36,7 @@ export default function LoginScreen({ navigation }: any) {
     } else {
       Alert.alert('Error de red', 'No se pudo conectar con el servidor');
     }
-    //console.error('❌ Error en login:', error);
+    
   }
 };
 

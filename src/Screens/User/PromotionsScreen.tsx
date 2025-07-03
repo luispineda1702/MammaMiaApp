@@ -1,6 +1,6 @@
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons'; // Usa esto si estás con Expo
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons'; 
 
 export default function PromotionsScreen({ navigation }: any) {
   return (

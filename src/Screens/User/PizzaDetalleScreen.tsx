@@ -1,14 +1,14 @@
 import { SafeAreaView, StyleSheet, Text, TextInput, Button, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useCarro } from '../../Components/CarroContext';// Asegúrate de que la ruta esté correcta
+import { useCarro } from '../../Components/CarroContext';
 
 export default function PizzaDetalleScreen({ route, navigation }: any) {
   const { pizza } = route.params;
   const [cantidad, setCantidad] = useState(1);
   const precioFinal = pizza.precioBase * cantidad;
 
-  const { agregarAlCarro } = useCarro(); // Usamos el contexto
+  const { agregarAlCarro } = useCarro(); 
 
   const agregar = () => {
     const pizzaConCantidad = {
@@ -18,7 +18,7 @@ export default function PizzaDetalleScreen({ route, navigation }: any) {
     };
 
     agregarAlCarro(pizzaConCantidad);
-    navigation.navigate('Carrito'); // Va a CarroScreen
+    navigation.navigate('Carrito'); 
   };
 
   return (

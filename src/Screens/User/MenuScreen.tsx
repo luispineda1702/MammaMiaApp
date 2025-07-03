@@ -1,7 +1,7 @@
 import { Button, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState , useEffect} from 'react'
 import { useFocusEffect, CommonActions } from '@react-navigation/native';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons'; // Usa esto si estás con Expo
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons'; 
 
 export default function MenuScreen({ navigation ,route}: any) {
   const [nombre, setNombre] = useState('');
