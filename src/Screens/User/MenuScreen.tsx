@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   View,
   Text,
   TouchableOpacity,
@@ -11,20 +10,16 @@ import {
 } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { estilosGlobales, colores } from '../../styles/estilosGlobales';
+import { useUsuario } from '../../Components/UsuarioContext';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.9;
 
-export default function MenuScreen({ navigation, route }: any) {
-  const [nombre, setNombre] = useState('');
-  const [apellido, setApellido] = useState('');
+export default function MenuScreen({ navigation }: any) {
+  const { usuario } = useUsuario();
 
-  useEffect(() => {
-    if (route.params?.usuario) {
-      setNombre(route.params.usuario.nombre);
-      setApellido(route.params.usuario.apellido);
-    }
-  }, [route.params]);
+  const nombre = usuario?.nombre || '';
+  const apellido = usuario?.apellido || '';
 
   const cerrarSesion = () => {
     navigation.reset({
@@ -45,95 +40,100 @@ export default function MenuScreen({ navigation, route }: any) {
     ? productos.filter((p) => p.tipo.toLowerCase() === filtro.toLowerCase())
     : productos;
 
+  // Componente para header (saludo + filtros)
+  const ListHeader = () => (
+    <>
+      <View style={styles.header}>
+        <Text style={styles.greeting}>
+          Hola {nombre} {apellido}
+        </Text>
+        <View style={styles.iconGroup}>
+          <TouchableOpacity onPress={() => navigation.navigate('Perfil')} style={styles.iconButton}>
+            <FontAwesome name="user-circle" size={34} color={colores.texto} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Carrito')} style={styles.iconButton}>
+            <FontAwesome name="shopping-cart" size={34} color={colores.texto} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={cerrarSesion} style={styles.iconButton}>
+            <MaterialIcons name="power-settings-new" size={34} color={colores.primario} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.filtroBotones}>
+        <TouchableOpacity
+          style={[styles.filtroBoton, filtro === null && styles.filtroSeleccionado]}
+          onPress={() => setFiltro(null)}
+        >
+          <Text style={[styles.filtroTexto, filtro === null && styles.textoSeleccionado]}>Todos</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.filtroBoton, filtro === 'Familiar' && styles.filtroSeleccionado]}
+          onPress={() => setFiltro('Familiar')}
+        >
+          <Text style={[styles.filtroTexto, filtro === 'Familiar' && styles.textoSeleccionado]}>Familiar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.filtroBoton, filtro === 'Individual' && styles.filtroSeleccionado]}
+          onPress={() => setFiltro('Individual')}
+        >
+          <Text style={[styles.filtroTexto, filtro === 'Individual' && styles.textoSeleccionado]}>Individual</Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+
+  // Componente para footer (botones)
+  const ListFooter = () => (
+    <View style={styles.botonesInferiores}>
+      <TouchableOpacity
+        style={[estilosGlobales.boton, { width: '45%' }]}
+        onPress={() => navigation.navigate('Promotions')}
+      >
+        <Text style={estilosGlobales.textoBoton}>Ver Promociones</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[estilosGlobales.boton, { width: '45%' }]}
+        onPress={() => navigation.navigate('CustomizePizza')}
+      >
+        <Text style={estilosGlobales.textoBoton}>Personalizar Pizza</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <SafeAreaView style={estilosGlobales.contenedor}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Text style={styles.greeting}>
-            Hola {nombre} {apellido}
-          </Text>
-          <View style={styles.iconGroup}>
-            <TouchableOpacity onPress={() => navigation.navigate('Perfil')} style={styles.iconButton}>
-              <FontAwesome name="user-circle" size={34} color={colores.texto} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Carrito')} style={styles.iconButton}>
-              <FontAwesome name="shopping-cart" size={34} color={colores.texto} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={cerrarSesion} style={styles.iconButton}>
-              <MaterialIcons name="power-settings-new" size={34} color={colores.primario} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.filtroBotones}>
+      <FlatList
+        data={filtrados}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 30, alignItems: 'center' }}
+        ListHeaderComponent={ListHeader}
+        ListFooterComponent={ListFooter}
+        renderItem={({ item }) => (
           <TouchableOpacity
-            style={[styles.filtroBoton, filtro === null && styles.filtroSeleccionado]}
-            onPress={() => setFiltro(null)}
+            onPress={() => navigation.navigate('PizzaDetalle', { pizza: item })}
+            style={styles.card}
           >
-            <Text style={[styles.filtroTexto, filtro === null && styles.textoSeleccionado]}>Todos</Text>
+            <Text style={styles.cardTitle}>{item.nombre}</Text>
+            <Text style={styles.cardText}>Tipo: {item.tipo}</Text>
+            <Text style={styles.cardText}>Precio base: S/ {item.precioBase.toFixed(2)}</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filtroBoton, filtro === 'Familiar' && styles.filtroSeleccionado]}
-            onPress={() => setFiltro('Familiar')}
-          >
-            <Text style={[styles.filtroTexto, filtro === 'Familiar' && styles.textoSeleccionado]}>Familiar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filtroBoton, filtro === 'Individual' && styles.filtroSeleccionado]}
-            onPress={() => setFiltro('Individual')}
-          >
-            <Text style={[styles.filtroTexto, filtro === 'Individual' && styles.textoSeleccionado]}>Individual</Text>
-          </TouchableOpacity>
-        </View>
-
-        <FlatList
-          data={filtrados}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 30 }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate('PizzaDetalle', { pizza: item })}
-              style={styles.card}
-            >
-              <Text style={styles.cardTitle}>{item.nombre}</Text>
-              <Text style={styles.cardText}>Tipo: {item.tipo}</Text>
-              <Text style={styles.cardText}>Precio base: S/ {item.precioBase.toFixed(2)}</Text>
-            </TouchableOpacity>
-          )}
-        />
-
-        <View style={styles.botonesInferiores}>
-          <TouchableOpacity
-            style={[estilosGlobales.boton, { width: '45%' }]}
-            onPress={() => navigation.navigate('Promotions')}
-          >
-            <Text style={estilosGlobales.textoBoton}>Ver Promociones</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[estilosGlobales.boton, { width: '45%' }]}
-            onPress={() => navigation.navigate('CustomizePizza')}
-          >
-            <Text style={estilosGlobales.textoBoton}>Personalizar Pizza</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        )}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    alignItems: 'center',
-    paddingBottom: 30,
-  },
   header: {
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 20,
+    paddingTop: 15, // para no chocar con barra status
   },
   greeting: {
     fontSize: 22,
