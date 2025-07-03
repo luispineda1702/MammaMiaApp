@@ -17,6 +17,7 @@ import { CarroProvider } from './src/Components/CarroContext';
 import { HistorialProvider } from './src/Components/HistorialContext'; 
 import MetodoPagoScreen from './src/Screens/User/MetPago';
 import HistorialScreen from './src/Screens/User/HistorialScreen';
+import { UsuarioProvider } from './src/Components/UsuarioContext';
 
 
 const Stack = createNativeStackNavigator();
@@ -24,22 +25,24 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <HistorialProvider>
-        <CarroProvider>
-          <Stack.Navigator initialRouteName="Login">
-            <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="Menu" component={MenuScreen} options={{headerShown: false}} />
-            <Stack.Screen name="PizzaDetalle" component={PizzaDetalleScreen} options={{headerShown: false}}/>
-            <Stack.Screen name="Promotions" component={PromotionsScreen}options={{headerShown: false}} />
-            <Stack.Screen name="CustomizePizza" component={CustomizePizzaScreen}options={{headerShown: false}} />
-            <Stack.Screen name="Carrito" component={CarroScreen}options={{headerShown: false}}/>
-            <Stack.Screen name="Perfil" component={PerfilScreen}options={{headerShown: false}}/>
-            <Stack.Screen name="Pago" component={MetodoPagoScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Historial" component={HistorialScreen} options={{ headerShown: false }} />
-          </Stack.Navigator>
-        </CarroProvider>
-      </HistorialProvider>
+      <UsuarioProvider>
+        <HistorialProvider>
+          <CarroProvider>
+            <Stack.Navigator initialRouteName="Login">
+              <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
+              <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}}/>
+              <Stack.Screen name="Menu" component={MenuScreen} options={{headerShown: false}} />
+              <Stack.Screen name="PizzaDetalle" component={PizzaDetalleScreen} options={{headerShown: false}}/>
+              <Stack.Screen name="Promotions" component={PromotionsScreen}options={{headerShown: false}} />
+              <Stack.Screen name="CustomizePizza" component={CustomizePizzaScreen}options={{headerShown: false}} />
+              <Stack.Screen name="Carrito" component={CarroScreen}options={{headerShown: false}}/>
+              <Stack.Screen name="Perfil" component={PerfilScreen}options={{headerShown: false}}/>
+              <Stack.Screen name="Pago" component={MetodoPagoScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Historial" component={HistorialScreen} options={{ headerShown: false }} />
+            </Stack.Navigator>
+          </CarroProvider>
+        </HistorialProvider>
+      </UsuarioProvider>
     </NavigationContainer>
   );
 }

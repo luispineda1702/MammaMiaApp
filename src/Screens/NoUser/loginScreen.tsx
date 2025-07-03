@@ -1,100 +1,76 @@
-import { Button, SafeAreaView, StyleSheet, Text, TextInput, View, Image, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, Keyboard, ImageBackground, StatusBar } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { SafeAreaView, TextInput, TouchableOpacity, Text, Alert, Image, View } from 'react-native';
 import axios from 'axios';
-import { Alert } from 'react-native';
-import { CommonActions } from '@react-navigation/native';
+import { estilosGlobales } from '../../styles/estilosGlobales';
+import { useUsuario } from '../../Components/UsuarioContext';
 
-const logo=require('../../assets/logo.png')
+const logo = require('../../assets/logo.png');
 
 export default function LoginScreen({ navigation }: any) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [correo, setCorreo] = useState('');
+  const [clave, setClave] = useState('');
+  const { setUsuario } = useUsuario();
+
   const API_URL = 'http://192.168.18.116:3000/api/users';
 
-  const loginUsuario = async () => {
-  try {
-    const res = await axios.post(`${API_URL}/login`, {
-      correo:email,
-      clave:password
-    });
-
-    const data = res.data;
-    console.log('✅ Login exitoso:', data);
-
-    
-    Alert.alert('Bienvenido', `Hola ${data.usuario.nombre}`);
-    
-    //navigation.navigate('Menu')
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'Menu',params:{usuario:data.usuario}, },],})
-    );
-  } catch (error:any) {
-    if (error.response?.data?.error) {
-      Alert.alert('Error de login', error.response.data.error);
-    } else {
-      Alert.alert('Error de red', 'No se pudo conectar con el servidor');
+  const login = async () => {
+    if (!correo.trim() || !clave) {
+      Alert.alert('Error', 'Por favor ingrese correo y contraseña.');
+      return;
     }
-    
-  }
-};
+
+    try {
+      const res = await axios.post(`${API_URL}/login`, { correo, clave });
+
+      if (res.data.usuario) {
+        setUsuario({
+          nombre: res.data.usuario.nombre,
+          apellido: res.data.usuario.apellido,
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Menu' }],
+        });
+      } else {
+        Alert.alert('Error', 'Credenciales inválidas');
+      }
+    } catch (error: any) {
+      Alert.alert('Error', 'No se pudo iniciar sesión. Intenta más tarde.');
+      console.error(error.response?.data || error.message);
+    }
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Image source={logo} style={{marginTop:30,width:200, height:200,alignSelf: 'center'}}></Image>
-      <Text style={styles.title}>Iniciar Sesión</Text>
-      <TextInput style={styles.input} placeholder="Correo" value={email} onChangeText={setEmail} />
+    <SafeAreaView style={estilosGlobales.contenedor}>
+      <View style={{ alignItems: 'center', marginBottom: 40, marginTop: 20 }}>
+        <Image source={logo} style={{ width: 180, height: 180, resizeMode: 'contain' }} />
+      </View>
+
       <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
+        style={estilosGlobales.input}
+        placeholder="Correo"
+        value={correo}
+        onChangeText={setCorreo}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
-      <View style={{marginVertical:8,paddingHorizontal:80}}>
-        <Button title="Ingresar" onPress={()=>loginUsuario()} />
-      </View>
-      <View style={{marginVertical:8,paddingHorizontal:80}}>
-        <Button title="¿No tienes cuenta? Regístrate" onPress={() => navigation.navigate('Register')} />
-      </View>
+      <TextInput
+        style={estilosGlobales.input}
+        placeholder="Contraseña"
+        value={clave}
+        onChangeText={setClave}
+        secureTextEntry
+      />
+
+      <TouchableOpacity style={estilosGlobales.boton} onPress={login}>
+        <Text style={estilosGlobales.textoBoton}>Iniciar Sesión</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+        <Text style={{ textAlign: 'center', marginTop: 15, color: '#007bff' }}>
+          ¿No tienes cuenta? Regístrate
+        </Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#FFFCEB',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#D35400',
-    marginBottom: 15,
-    marginTop:10,
-    textAlign:'center'
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#CCC',
-    backgroundColor: '#FFF',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-    marginHorizontal:30
-  },
-  itemBox: {
-    padding: 10,
-    backgroundColor: '#FFF9E5',
-    borderRadius: 8,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  item: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-});

@@ -1,9 +1,21 @@
-import { Button, FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState , useEffect} from 'react'
-import { useFocusEffect, CommonActions } from '@react-navigation/native';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons'; 
+import React, { useState, useEffect } from 'react';
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { estilosGlobales, colores } from '../../styles/estilosGlobales';
 
-export default function MenuScreen({ navigation ,route}: any) {
+const { width } = Dimensions.get('window');
+const CARD_WIDTH = width * 0.9;
+
+export default function MenuScreen({ navigation, route }: any) {
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
 
@@ -15,13 +27,11 @@ export default function MenuScreen({ navigation ,route}: any) {
   }, [route.params]);
 
   const cerrarSesion = () => {
-  navigation.dispatch(
-    CommonActions.reset({
+    navigation.reset({
       index: 0,
       routes: [{ name: 'Login' }],
-    })
-  );
-};
+    });
+  };
 
   const productos = [
     { id: '1', nombre: 'Pizza Clásica', tipo: 'Familiar', precioBase: 30 },
@@ -30,117 +40,164 @@ export default function MenuScreen({ navigation ,route}: any) {
     { id: '4', nombre: 'Pizza Mixta', tipo: 'Individual', precioBase: 20 },
   ];
 
-  
-
   const [filtro, setFiltro] = useState<string | null>(null);
   const filtrados = filtro
     ? productos.filter((p) => p.tipo.toLowerCase() === filtro.toLowerCase())
     : productos;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-          <Text style={styles.greeting}>Hola {nombre} {apellido}</Text>
-        <View style={styles.iconGroup}>
-        <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
-          <FontAwesome name="user-circle" size={24} color="black" style={styles.icon} />
-        </TouchableOpacity>  
-        <TouchableOpacity onPress={() => navigation.navigate('Carrito')}>
-          <FontAwesome name="shopping-cart" size={24} color="black" style={styles.icon} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={cerrarSesion}>
-          <MaterialIcons name="power-settings-new" size={24} color="red" style={styles.icon} />
-        </TouchableOpacity>
-      </View>
-    </View>
-      <Text style={styles.title}>Menú de Pizzas</Text>
+    <SafeAreaView style={estilosGlobales.contenedor}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <Text style={styles.greeting}>
+            Hola {nombre} {apellido}
+          </Text>
+          <View style={styles.iconGroup}>
+            <TouchableOpacity onPress={() => navigation.navigate('Perfil')} style={styles.iconButton}>
+              <FontAwesome name="user-circle" size={34} color={colores.texto} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Carrito')} style={styles.iconButton}>
+              <FontAwesome name="shopping-cart" size={34} color={colores.texto} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={cerrarSesion} style={styles.iconButton}>
+              <MaterialIcons name="power-settings-new" size={34} color={colores.primario} />
+            </TouchableOpacity>
+          </View>
+        </View>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10 }}>
-        <Button title="Todos" onPress={() => setFiltro(null)} />
-        <Button title="Familiar" onPress={() => setFiltro('Familiar')} />
-        <Button title="Individual" onPress={() => setFiltro('Individual')} />
-      </View>
-
-      <FlatList
-        data={filtrados}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
+        <View style={styles.filtroBotones}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('PizzaDetalle', { pizza: item })}
-            style={styles.itemBox}
+            style={[styles.filtroBoton, filtro === null && styles.filtroSeleccionado]}
+            onPress={() => setFiltro(null)}
           >
-            <Text style={styles.item}>{item.nombre}</Text>
-            <Text>Tipo: {item.tipo}</Text>
-            <Text>Precio base: S/ {item.precioBase.toFixed(2)}</Text>
+            <Text style={[styles.filtroTexto, filtro === null && styles.textoSeleccionado]}>Todos</Text>
           </TouchableOpacity>
-        )}
-      />
+          <TouchableOpacity
+            style={[styles.filtroBoton, filtro === 'Familiar' && styles.filtroSeleccionado]}
+            onPress={() => setFiltro('Familiar')}
+          >
+            <Text style={[styles.filtroTexto, filtro === 'Familiar' && styles.textoSeleccionado]}>Familiar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.filtroBoton, filtro === 'Individual' && styles.filtroSeleccionado]}
+            onPress={() => setFiltro('Individual')}
+          >
+            <Text style={[styles.filtroTexto, filtro === 'Individual' && styles.textoSeleccionado]}>Individual</Text>
+          </TouchableOpacity>
+        </View>
 
-      <View style={{marginVertical:8,paddingHorizontal:40}}>
-        <Button title="Ver Promociones" onPress={() => navigation.navigate('Promotions')} />
-      </View>  
-      <View style={{marginVertical:8,paddingHorizontal:40}}>  
-        <Button title="Personalizar Pizza" onPress={() => navigation.navigate('CustomizePizza')} />
-      </View>
+        <FlatList
+          data={filtrados}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 30 }}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => navigation.navigate('PizzaDetalle', { pizza: item })}
+              style={styles.card}
+            >
+              <Text style={styles.cardTitle}>{item.nombre}</Text>
+              <Text style={styles.cardText}>Tipo: {item.tipo}</Text>
+              <Text style={styles.cardText}>Precio base: S/ {item.precioBase.toFixed(2)}</Text>
+            </TouchableOpacity>
+          )}
+        />
+
+        <View style={styles.botonesInferiores}>
+          <TouchableOpacity
+            style={[estilosGlobales.boton, { width: '45%' }]}
+            onPress={() => navigation.navigate('Promotions')}
+          >
+            <Text style={estilosGlobales.textoBoton}>Ver Promociones</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[estilosGlobales.boton, { width: '45%' }]}
+            onPress={() => navigation.navigate('CustomizePizza')}
+          >
+            <Text style={estilosGlobales.textoBoton}>Personalizar Pizza</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#FFFCEB',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#D35400',
-    marginBottom: 15,
-    marginTop:10,
-    textAlign:'center'
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#CCC',
-    backgroundColor: '#FFF',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-    marginHorizontal:30
-  },
-  itemBox: {
-    padding: 10,
-    backgroundColor: '#FFF9E5',
-    borderRadius: 8,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  item: {
-    fontSize: 18,
-    fontWeight: '600',
+  scrollContent: {
+    alignItems: 'center',
+    paddingBottom: 30,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    width: '100%',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginTop:15,
-    backgroundColor: '#f0f0f0',
-    marginBottom: 10,
-    borderRadius: 8,
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
   greeting: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 22,
+    fontWeight: '700',
+    color: colores.texto,
+    flex: 1,
   },
   iconGroup: {
     flexDirection: 'row',
   },
-  icon: {
-    marginLeft: 16,
+  iconButton: {
+    marginLeft: 20,
+  },
+  filtroBotones: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 15,
+    width: '100%',
+  },
+  filtroBoton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginHorizontal: 8,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: colores.primario,
+    backgroundColor: colores.fondo,
+  },
+  filtroSeleccionado: {
+    backgroundColor: colores.primario,
+  },
+  filtroTexto: {
+    color: colores.primario,
+    fontWeight: '600',
+  },
+  textoSeleccionado: {
+    color: colores.fondo,
+  },
+  card: {
+    width: CARD_WIDTH,
+    backgroundColor: colores.grisClaro,
+    padding: 20,
+    borderRadius: 8,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  cardTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colores.texto,
+    marginBottom: 6,
+  },
+  cardText: {
+    fontSize: 16,
+    color: colores.texto,
+  },
+  botonesInferiores: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: CARD_WIDTH,
+    marginTop: 20,
   },
 });
-  

@@ -1,119 +1,106 @@
-import { Button, SafeAreaView, StyleSheet, Text, TextInput ,Image, View} from 'react-native'
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { SafeAreaView, Text, TextInput, TouchableOpacity, Image, Alert, View } from 'react-native';
 import axios from 'axios';
+import { estilosGlobales, colores } from '../../styles/estilosGlobales';
 
-const logo=require('../../assets/logo.png')
+const logo = require('../../assets/logo.png');
 
 export default function RegisterScreen({ navigation }: any) {
-    const [name, setName] = useState('');
-    const [lastname, setlastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const API_URL = 'http://192.168.18.116:3000/api/users';
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [correo, setCorreo] = useState('');
+  const [clave, setClave] = useState('');
 
-    const validarCampos = () => {
-      const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/;
-      const emailValido = /^[^\s@]+@[^\s@]+\.(com)$/;
-      const sinEspacios = /^\S+$/;
+  const API_URL = 'http://192.168.18.116:3000/api/users';
 
-      if (!soloLetras.test(name.trim())) {
-        alert('El nombre solo debe contener letras');
-        return false;
-      }
+  const validarCampos = (): boolean => {
+    const soloLetras = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/;
+    const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      if (!soloLetras.test(lastname.trim())) {
-        alert('El apellido solo debe contener letras');
-        return false;
-      }
+    const nom = nombre.trim();
+    const ape = apellido.trim();
+    const corr = correo.trim();
 
-      if (!emailValido.test(email.trim())) {
-        alert('Correo inválido. Debe contener @ y terminar en .com');
-        return false;
-      }
+    if (!nom) {
+      Alert.alert('Error', 'El campo Nombre es obligatorio.');
+      return false;
+    }
+    if (!soloLetras.test(nom)) {
+      Alert.alert('Error', 'El nombre solo debe contener letras.');
+      return false;
+    }
 
-      if (!sinEspacios.test(password)) {
-        alert('La contraseña no debe contener espacios');
-        return false;
-      }
+    if (!ape) {
+      Alert.alert('Error', 'El campo Apellido es obligatorio.');
+      return false;
+    }
+    if (!soloLetras.test(ape)) {
+      Alert.alert('Error', 'El apellido solo debe contener letras.');
+      return false;
+    }
 
-      return true;
-      };
+    if (!corr) {
+      Alert.alert('Error', 'El campo Correo es obligatorio.');
+      return false;
+    }
+    if (!correoValido.test(corr) || !corr.includes('.com')) {
+      Alert.alert('Error', 'Correo inválido. Debe contener "@" y terminar en ".com"');
+      return false;
+    }
 
-      const registrarUsuario = async () => {
-        if (!validarCampos()) return;
-        try {
-          const res = await axios.post(`${API_URL}/register`, {
-            nombre:name,
-            apellido:lastname,
-            correo: email,
-            clave: password
-          });
-          console.log(res.data);
-          alert(res.data.message);
-          navigation.navigate('Login')
-        } catch (error:any) {
-          console.error(error.response?.data || error.message);
-          alert('Error al registrar');
-        }
-    };
-  
-    return (
-      <SafeAreaView style={styles.container}>
-        <Image source={logo} style={{marginTop:30,width:200, height:200,alignSelf: 'center'}}></Image>
-        <Text style={styles.title}>Registro</Text>
-        <TextInput style={styles.input} placeholder="Nombre" value={name} onChangeText={setName} />
-        <TextInput style={styles.input} placeholder="Apellido" value={lastname} onChangeText={setlastName} />
-        <TextInput style={styles.input} placeholder="Correo" value={email} onChangeText={setEmail} />
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        <View style={{marginVertical:8,paddingHorizontal:80}}>
-          <Button title="Registrarse" onPress={() =>registrarUsuario()} />
-        </View>
-        <View style={{marginVertical:8,paddingHorizontal:80}}>
-          <Button title="Cancelar" onPress={() => navigation.navigate('Login')} />
-        </View>
-      </SafeAreaView>
-    );
-  }
+    if (!clave) {
+      Alert.alert('Error', 'El campo Contraseña es obligatorio.');
+      return false;
+    }
+    if (clave.includes(' ')) {
+      Alert.alert('Error', 'La contraseña no debe contener espacios.');
+      return false;
+    }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#FFFCEB',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#D35400',
-    marginBottom: 15,
-    marginTop:10,
-    textAlign:'center'
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#CCC',
-    backgroundColor: '#FFF',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-    marginHorizontal:30
-  },
-  itemBox: {
-    padding: 10,
-    backgroundColor: '#FFF9E5',
-    borderRadius: 8,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  item: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-});
+    return true;
+  };
+
+  const registrar = async () => {
+    if (!validarCampos()) return;
+
+    try {
+      const res = await axios.post(`${API_URL}/register`, {
+        nombre,
+        apellido,
+        correo,
+        clave,
+      });
+
+      Alert.alert('Éxito', res.data.message);
+      navigation.navigate('Login');
+    } catch (error: any) {
+      console.error('Error registro:', error.response?.data || error.message);
+      Alert.alert('Error', error.response?.data?.message || 'Hubo un problema al registrar. Intenta más tarde.');
+    }
+  };
+
+  return (
+    <SafeAreaView style={estilosGlobales.contenedor}>
+      <Image source={logo} style={{ width: 200, height: 200, alignSelf: 'center', marginBottom: 20 }} />
+      <Text style={estilosGlobales.titulo}>Registro</Text>
+
+      <TextInput style={estilosGlobales.input} placeholder="Nombre" value={nombre} onChangeText={setNombre} />
+      <TextInput style={estilosGlobales.input} placeholder="Apellido" value={apellido} onChangeText={setApellido} />
+      <TextInput style={estilosGlobales.input} placeholder="Correo" value={correo} onChangeText={setCorreo} />
+      <TextInput style={estilosGlobales.input} placeholder="Contraseña" value={clave} secureTextEntry onChangeText={setClave} />
+
+      <TouchableOpacity style={estilosGlobales.boton} onPress={registrar}>
+        <Text style={estilosGlobales.textoBoton}>Registrarse</Text>
+      </TouchableOpacity>
+
+      <View style={{ marginTop: 12 }}>
+        <TouchableOpacity
+          style={{ ...estilosGlobales.boton, backgroundColor: colores.grisClaro }}
+          onPress={() => navigation.navigate('Login')}
+        >
+          <Text style={{ ...estilosGlobales.textoBoton, color: colores.texto }}>Cancelar</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
