@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   View,
@@ -10,16 +10,20 @@ import {
 } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { estilosGlobales, colores } from '../../styles/estilosGlobales';
-import { useUsuario } from '../../Components/UsuarioContext';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.9;
 
-export default function MenuScreen({ navigation }: any) {
-  const { usuario } = useUsuario();
+export default function MenuScreen({ navigation, route }: any) {
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
 
-  const nombre = usuario?.nombre || '';
-  const apellido = usuario?.apellido || '';
+  useEffect(() => {
+    if (route.params?.usuario) {
+      setNombre(route.params.usuario.nombre);
+      setApellido(route.params.usuario.apellido);
+    }
+  }, [route.params]);
 
   const cerrarSesion = () => {
     navigation.reset({
@@ -40,8 +44,7 @@ export default function MenuScreen({ navigation }: any) {
     ? productos.filter((p) => p.tipo.toLowerCase() === filtro.toLowerCase())
     : productos;
 
-  // Componente para header (saludo + filtros)
-  const ListHeader = () => (
+  const renderHeader = () => (
     <>
       <View style={styles.header}>
         <Text style={styles.greeting}>
@@ -83,8 +86,7 @@ export default function MenuScreen({ navigation }: any) {
     </>
   );
 
-  // Componente para footer (botones)
-  const ListFooter = () => (
+  const renderFooter = () => (
     <View style={styles.botonesInferiores}>
       <TouchableOpacity
         style={[estilosGlobales.boton, { width: '45%' }]}
@@ -109,8 +111,8 @@ export default function MenuScreen({ navigation }: any) {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 30, alignItems: 'center' }}
-        ListHeaderComponent={ListHeader}
-        ListFooterComponent={ListFooter}
+        ListHeaderComponent={renderHeader}
+        ListFooterComponent={renderFooter}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => navigation.navigate('PizzaDetalle', { pizza: item })}
@@ -133,7 +135,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 20,
-    paddingTop: 15, // para no chocar con barra status
+    paddingHorizontal: 16,
   },
   greeting: {
     fontSize: 22,

@@ -1,84 +1,84 @@
-import { SafeAreaView, StyleSheet, Text, TextInput, Button, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Alert,
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useCarro } from '../../Components/CarroContext';
+import { estilosGlobales, colores } from '../../styles/estilosGlobales';
 
 export default function PizzaDetalleScreen({ route, navigation }: any) {
   const { pizza } = route.params;
-  const [cantidad, setCantidad] = useState(1);
-  const precioFinal = pizza.precioBase * cantidad;
+  const [cantidadTexto, setCantidadTexto] = useState('1');
 
-  const { agregarAlCarro } = useCarro(); 
+  const { agregarAlCarro } = useCarro();
+
+  const precioBaseNum = Number(pizza.precioBase);
+  const cantidad = parseInt(cantidadTexto) || 0;
+  const precioFinal = precioBaseNum * cantidad;
 
   const agregar = () => {
-    const pizzaConCantidad = {
-      ...pizza,
+    if (cantidad < 1) {
+      Alert.alert('Error', 'La cantidad debe ser mayor que 0');
+      return;
+    }
+
+    agregarAlCarro({
+      nombre: pizza.nombre,
+      tipo: 'Normal',
       cantidad,
       total: precioFinal,
-    };
+    });
 
-    agregarAlCarro(pizzaConCantidad);
-    navigation.navigate('Carrito'); 
+    navigation.navigate('Carrito');
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={estilosGlobales.contenedor}>
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <FontAwesome name="arrow-left" size={24} color="black" />
+        <FontAwesome name="arrow-left" size={24} color={colores.texto} />
       </TouchableOpacity>
 
-      <Text style={styles.title}>{pizza.nombre}</Text>
-      <Text>Tipo: {pizza.tipo}</Text>
-      <Text>Precio unitario: S/ {pizza.precioBase}</Text>
+      <Text style={estilosGlobales.titulo}>{pizza.nombre}</Text>
+      <Text style={styles.subtexto}>Precio unitario: S/ {precioBaseNum.toFixed(2)}</Text>
 
       <TextInput
-        style={styles.input}
+        style={estilosGlobales.input}
         keyboardType="numeric"
         placeholder="Cantidad"
-        value={cantidad.toString()}
-        onChangeText={(value) => setCantidad(parseInt(value) || 1)}
+        value={cantidadTexto}
+        onChangeText={setCantidadTexto}
       />
 
-      <Text style={styles.title}>Total: S/ {precioFinal.toFixed(2)}</Text>
-      <Button title="Agregar al pedido" onPress={agregar} />
+      <Text style={styles.total}>Total: S/ {precioFinal.toFixed(2)}</Text>
+
+      <TouchableOpacity style={estilosGlobales.boton} onPress={agregar}>
+        <Text style={estilosGlobales.textoBoton}>Agregar al pedido</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 20,
-      backgroundColor: '#FFFCEB',
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#D35400',
-      marginBottom: 15,
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: '#CCC',
-      backgroundColor: '#FFF',
-      padding: 10,
-      borderRadius: 8,
-      marginBottom: 10,
-    },
-    itemBox: {
-      padding: 10,
-      backgroundColor: '#FFF9E5',
-      borderRadius: 8,
-      marginBottom: 8,
-      borderWidth: 1,
-      borderColor: '#ddd',
-    },
-    item: {
-      fontSize: 18,
-      fontWeight: '600',
-    },
-    backButton: {
+const styles = StyleSheet.create({
+  backButton: {
     alignSelf: 'flex-start',
     marginBottom: 10,
-    }
-  });
+  },
+  subtexto: {
+    fontSize: 18,
+    color: colores.texto,
+    marginBottom: 6,
+  },
+  total: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: colores.primario,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+});

@@ -2,128 +2,113 @@ import React, { useState } from 'react';
 import {
   SafeAreaView,
   Text,
-  Button,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
-  ScrollView,
   View,
 } from 'react-native';
-import { useCarro } from '../../Components/CarroContext';
-import { useHistorial } from '../../Components/HistorialContext';
+import { estilosGlobales, colores } from '../../styles/estilosGlobales';
+
+const metodosPago = ['Tarjeta', 'Yape', 'Plin', 'Efectivo'];
 
 export default function MetodoPagoScreen({ navigation }: any) {
-  const [metodoPago, setMetodoPago] = useState<string | null>(null);
-  const { carro, limpiarCarro, total } = useCarro();
-  const { agregarPedido } = useHistorial();
+  const [metodoSeleccionado, setMetodoSeleccionado] = useState<string>(metodosPago[0]);
+  const [direccion, setDireccion] = useState('');
 
-  const confirmarPago = () => {
-    if (!metodoPago) {
-      Alert.alert('Error', 'Seleccione un método de pago');
+  const confirmar = () => {
+    if (!direccion.trim()) {
+      alert('Por favor ingresa una dirección.');
       return;
     }
-
-    if (carro.length === 0) {
-      Alert.alert('Error', 'El carrito está vacío');
-      return;
-    }
-
-    const productosParaPedido = carro.map(({ nombre, cantidad, total }) => ({
-      nombre,
-      cantidad,
-      precio: total,
-    }));
-
-    const nuevoPedido = {
-      id: Date.now(),
-      fecha: new Date().toLocaleString(),
-      productos: productosParaPedido,
-      total,
-      metodoPago,
-    };
-
-    agregarPedido(nuevoPedido);
-    limpiarCarro();
-    Alert.alert('Éxito', 'Pago realizado correctamente', [
-      { text: 'OK', onPress: () => navigation.navigate('Perfil') },
-    ]);
+    navigation.navigate('ConfirmarPedido', {
+      metodo: metodoSeleccionado,
+      direccion,
+    });
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Selecciona método de pago</Text>
+    <SafeAreaView style={[estilosGlobales.contenedor, styles.container]}>
+      <Text style={styles.titulo}>Selecciona método de pago</Text>
 
-      {['Tarjeta', 'Yape', 'Plin', 'Efectivo'].map((metodo) => (
-        <TouchableOpacity
-          key={metodo}
-          style={[styles.option, metodoPago === metodo && styles.selected]}
-          onPress={() => setMetodoPago(metodo)}
-        >
-          <Text>{metodo}</Text>
-        </TouchableOpacity>
-      ))}
-
-      <Text style={styles.resumenTitle}>Resumen del pedido:</Text>
-      <ScrollView style={styles.resumenContainer}>
-        {carro.map((prod) => (
-          <View key={prod.id} style={styles.productoRow}>
-            <Text>{prod.nombre} x {prod.cantidad}</Text>
-            <Text>S/ {prod.total.toFixed(2)}</Text>
-          </View>
+      <View style={styles.opcionesContainer}>
+        {metodosPago.map((metodo) => (
+          <TouchableOpacity
+            key={metodo}
+            style={[
+              styles.opcion,
+              metodo === metodoSeleccionado && styles.opcionSeleccionada,
+            ]}
+            onPress={() => setMetodoSeleccionado(metodo)}
+          >
+            <Text
+              style={[
+                styles.textoOpcion,
+                metodo === metodoSeleccionado && { color: colores.fondo, fontWeight: '700' },
+              ]}
+            >
+              {metodo}
+            </Text>
+          </TouchableOpacity>
         ))}
-        <View style={styles.totalRow}>
-          <Text style={styles.totalTexto}>Total:</Text>
-          <Text style={styles.totalPrecio}>S/ {total.toFixed(2)}</Text>
-        </View>
-      </ScrollView>
+      </View>
 
-      <Button title="Confirmar pago" onPress={confirmarPago} />
+      <Text style={styles.label}>Dirección de entrega:</Text>
+      <TextInput
+        style={estilosGlobales.input}
+        placeholder="Escribe la dirección"
+        value={direccion}
+        onChangeText={setDireccion}
+      />
+
+      <TouchableOpacity style={[estilosGlobales.boton, styles.boton]} onPress={confirmar}>
+        <Text style={estilosGlobales.textoBoton}>Confirmar</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 22, marginBottom: 20, textAlign: 'center' },
-  option: {
-    padding: 15,
+  container: {
+    paddingHorizontal: 16,
+    backgroundColor: colores.fondo,
+    flex: 1,
+  },
+  titulo: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: colores.texto,
+    marginVertical: 20,
+    textAlign: 'center',
+  },
+  opcionesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 30,
+    flexWrap: 'wrap',
+  },
+  opcion: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    marginBottom: 10,
-    borderRadius: 8,
+    borderColor: colores.primario,
+    borderRadius: 25,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginHorizontal: 8,
+    marginVertical: 6,
+    backgroundColor: colores.fondo,
   },
-  selected: {
-    backgroundColor: '#aee',
+  opcionSeleccionada: {
+    backgroundColor: colores.primario,
   },
-  resumenTitle: {
+  textoOpcion: {
     fontSize: 18,
-    fontWeight: 'bold',
+    color: colores.texto,
+  },
+  label: {
+    fontSize: 18,
+    color: colores.texto,
+    marginBottom: 8,
+  },
+  boton: {
     marginTop: 20,
-    marginBottom: 10,
   },
-  resumenContainer: {
-    maxHeight: 180,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-  },
-  productoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#333',
-    paddingTop: 6,
-  },
-  totalTexto: { fontWeight: 'bold', fontSize: 16 },
-  totalPrecio: { fontWeight: 'bold', fontSize: 16 },
 });

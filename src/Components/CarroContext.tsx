@@ -1,22 +1,22 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
 
 export interface Producto {
-  id: number;
+  id: string | number;
   nombre: string;
-  tipo?: string;
+  tipo: 'Promoción' | 'Normal' | 'Personalizada';
+  cantidad: number;
+  total: number;
   tamanio?: string;
   masa?: string;
-  cantidad: number;
   ingredientes?: string[];
-  total: number; 
 }
 
 interface CarroContextProps {
   carro: Producto[];
   agregarAlCarro: (producto: Omit<Producto, 'id'>) => void;
-  eliminarDelCarro: (id: number) => void;
+  eliminarDelCarro: (id: string | number) => void;
   limpiarCarro: () => void;
-  total: number; 
+  total: number;
 }
 
 const CarroContext = createContext<CarroContextProps | undefined>(undefined);
@@ -29,15 +29,14 @@ export const CarroProvider = ({ children }: { children: React.ReactNode }) => {
     setCarro(prev => [...prev, nuevoProducto]);
   };
 
-  const eliminarDelCarro = (id: number) => {
-    setCarro(prev => prev.filter(item => item.id !== id));
+  const eliminarDelCarro = (id: string | number) => {
+    setCarro(prev => prev.filter(p => p.id !== id));
   };
 
   const limpiarCarro = () => {
     setCarro([]);
   };
 
-  
   const total = useMemo(() => {
     return carro.reduce((acc, producto) => acc + producto.total, 0);
   }, [carro]);

@@ -24,6 +24,7 @@ export default function LoginScreen({ navigation }: any) {
 
       if (res.data.usuario) {
         setUsuario({
+          id: res.data.usuario.id,
           nombre: res.data.usuario.nombre,
           apellido: res.data.usuario.apellido,
         });

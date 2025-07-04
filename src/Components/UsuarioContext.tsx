@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 
 type Usuario = {
+  id:number,
   nombre: string;
   apellido: string;
   // otros datos si quieres

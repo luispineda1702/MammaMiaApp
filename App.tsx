@@ -18,6 +18,8 @@ import { HistorialProvider } from './src/Components/HistorialContext';
 import MetodoPagoScreen from './src/Screens/User/MetPago';
 import HistorialScreen from './src/Screens/User/HistorialScreen';
 import { UsuarioProvider } from './src/Components/UsuarioContext';
+import ConfirmarPedidoScreen from './src/Screens/User/ConfirmarPedidoScreen';
+import HistorialPedidosScreen from './src/Screens/User/HistorialPedidosScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -37,8 +39,9 @@ export default function App() {
               <Stack.Screen name="CustomizePizza" component={CustomizePizzaScreen}options={{headerShown: false}} />
               <Stack.Screen name="Carrito" component={CarroScreen}options={{headerShown: false}}/>
               <Stack.Screen name="Perfil" component={PerfilScreen}options={{headerShown: false}}/>
-              <Stack.Screen name="Pago" component={MetodoPagoScreen} options={{ headerShown: false }} />
-              <Stack.Screen name="Historial" component={HistorialScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="MetodoPago" component={MetodoPagoScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Historial" component={HistorialPedidosScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="ConfirmarPedido" component={ConfirmarPedidoScreen} options={{headerShown: false}} />
             </Stack.Navigator>
           </CarroProvider>
         </HistorialProvider>

@@ -1,92 +1,98 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, FlatList, View, Button, TouchableOpacity } from 'react-native';
-import { useCarro,Producto } from '../../Components/CarroContext';
-import { FontAwesome } from '@expo/vector-icons';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { useCarro, Producto } from '../../Components/CarroContext';
+import { estilosGlobales, colores } from '../../styles/estilosGlobales';
 
-export default function CarroScreen({ navigation }: any) {
-  const { carro, eliminarDelCarro, limpiarCarro } = useCarro();
+const CARD_WIDTH = Dimensions.get('screen').width * 0.9;
 
-  const totalCompra = carro.reduce((acc, item) => acc + item.total * item.cantidad, 0);
+export default function CarritoScreen({ navigation }: any) {
+  const { carro } = useCarro();
+  const total = carro.reduce((acc: number, item) => acc + item.total, 0);
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Botón atrás */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <FontAwesome name="arrow-left" size={24} color="black" />
-      </TouchableOpacity>
-
-      <Text style={styles.title}>Carrito de Compras</Text>
-
-      {carro.length === 0 ? (
-        <Text style={styles.emptyText}>El carrito está vacío</Text>
-      ) : (
-        <>
-          <FlatList
-            data={carro}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.itemContainer}>
-                <Text style={styles.itemName}>{item.nombre}</Text>
-                <Text>Cantidad: {item.cantidad}</Text>
-                {item.tamanio && <Text>Tamaño: {item.tamanio}</Text>}
-                {item.masa && <Text>Masa: {item.masa}</Text>}
-                {item.ingredientes && item.ingredientes.length > 0 && (
-                  <Text>Ingredientes: {item.ingredientes.join(', ')}</Text>
-                )}
-                <Text>Precio total: S/ {item.total.toFixed(2)}</Text>
-                <Button title="Eliminar" onPress={() => eliminarDelCarro(item.id)} />
-              </View>
+    <SafeAreaView style={[estilosGlobales.contenedor, styles.container]}>
+      <FlatList
+        data={carro}
+        keyExtractor={(_, i) => i.toString()}
+        contentContainerStyle={styles.lista}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.nombre}>{item.nombre}</Text>
+            {item.tipo && <Text style={styles.texto}>Tipo: {item.tipo}</Text>}
+            {item.tamanio && <Text style={styles.texto}>Tamaño: {item.tamanio}</Text>}
+            {item.masa && <Text style={styles.texto}>Masa: {item.masa}</Text>}
+            {item.ingredientes && item.ingredientes.length > 0 && (
+              <Text style={styles.texto}>Ingredientes: {item.ingredientes.join(', ')}</Text>
             )}
-          />
-
-          <Text style={styles.total}>Total a pagar: S/ {totalCompra.toFixed(2)}</Text>
-
-          <View style={styles.buttonGroup}>
-            <Button title="Pagar" onPress={() => navigation.navigate('Pago')} />
-            <Button title="Vaciar carrito" onPress={limpiarCarro} color="red" />
+            <Text style={styles.total}>Subtotal: S/ {item.total.toFixed(2)}</Text>
           </View>
-        </>
-      )}
+        )}
+      />
+
+      <Text style={styles.totalFinal}>Total: S/ {total.toFixed(2)}</Text>
+
+      <TouchableOpacity
+        style={[estilosGlobales.boton, styles.boton]}
+        onPress={() => navigation.navigate('MetodoPago')}
+      >
+        <Text style={estilosGlobales.textoBoton}>Pagar</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 16, paddingTop: 10 },
-  backButton: {
-    marginBottom: 10,
-    alignSelf: 'flex-start',
+  container: {
+    backgroundColor: colores.fondo,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
+  lista: {
+    padding: 16,
+    paddingBottom: 40,
   },
-  emptyText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginTop: 30,
-  },
-  itemContainer: {
+  card: {
+    backgroundColor: colores.grisClaro,
+    width: CARD_WIDTH,
+    alignSelf: 'center',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderColor: colores.borde,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    padding: 12,
-    marginBottom: 12,
   },
-  itemName: {
-    fontWeight: 'bold',
-    fontSize: 18,
+  nombre: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colores.texto,
+    marginBottom: 4,
+  },
+  texto: {
+    fontSize: 16,
+    color: colores.texto,
+    marginBottom: 2,
   },
   total: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'right',
-    marginVertical: 12,
+    fontSize: 16,
+    fontWeight: '700',
+    color: colores.texto,
+    marginTop: 8,
   },
-  buttonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  totalFinal: {
+    fontSize: 22,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: colores.texto,
+    marginVertical: 20,
+  },
+  boton: {
+    width: CARD_WIDTH,
+    alignSelf: 'center',
   },
 });
